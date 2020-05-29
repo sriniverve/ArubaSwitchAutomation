@@ -2,6 +2,7 @@ import requests
 import json
 import re
 
+
 def get_cookie(switchIP):
     f = open("/Users/skilladi/Documents/PyCharm Projects/ArubaSwitchAutomation/src/config/params.json", 'r')
     url = f"http://{switchIP}:80/rest/v1/login-sessions"
@@ -28,24 +29,30 @@ def get_cookie(switchIP):
         # print(e)
         return None
 
-def getVlanDetails(url):
-    response = requests.get(url)
-    if response.status_code == 200:
-        json_response = json(response.text)
-        elements = json_response["vlan_element"]
-        vlan_details = []
-        try:
-            for vlan in elements:
-                vlan_details.append({"vlan_name": vlan["name"]}, {"vlan_id": vlan["vlan_id"]})
-        except Exception as e:
-            print("Did not find the key(s): vlan_id or name")
-            # print(e)
 
-    else:
-        print(f"Did not return the desired vlan data from the switch coz of {response.status_code} error")
+def getVlanDetails(switchIP):
+    url = f"http://{switchIP}:80/rest/v1/vlans"
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            json_response = json(response.text)
+            elements = json_response["vlan_element"]
+            vlan_details = []
+            try:
+                for vlan in elements:
+                    vlan_details.append({"vlan_name": vlan["name"]}, {"vlan_id": vlan["vlan_id"]})
+            except Exception as e:
+                print("Did not find the key(s): vlan_id or name")
+                # print(e)
+        else:
+            print(f"Did not return the desired vlan data from the switch coz of {response.status_code} error")
+            return None
+
+        return vlan_details
+    except Exception as e:
+        print("Switch could not be reached")
+        # print(e)
         return None
-
-    return vlan_details
 
 def configVlan(switchIP, cookie, vlan_data):
     headers = {"cookie": cookie}
@@ -62,4 +69,3 @@ def configVlan(switchIP, cookie, vlan_data):
         # print(e)
         print("Did not get any response from the switch. Config failed")
         return False
-

@@ -17,6 +17,13 @@ def main():
             vlan_data = json.loads(f.read())
             if dLib.configVlan(SWITCH1, cookie, vlan_data):
                 print("Config done successfully")
+                vlan_fetch = dLib.getVlanDetails(SWITCH1)
+                if vlan_fetch is not None:
+                    for vlan_fetched in vlan_fetch:
+                        if vlan_fetch[vlan_fetched]["vlan_name"] = vlan_data[vlan_fetched]["vlan_name"] and vlan_fetch[vlan_fetched]["vlan_id"] = vlan_data[vlan_fetched]["vlan_id"]:
+                            print("Vlans configuration successfully done")
+                        else:
+                            print("Mismatch in vlan configuration found")
 
 if __name__ == '__main__':
     main()
